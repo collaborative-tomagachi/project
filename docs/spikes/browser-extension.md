@@ -131,11 +131,11 @@ Popups close when a user clicks outside of it, where user actions can live. I.e.
 
 Where the extension settings live.
 
-### `background.js`
+### `/src/pages/panel`
 
-```javascript
+> [Sidebar Documentation](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/user_interface/Sidebars)
 
-```
+I think this is where we should have the room for where the pet should actually live.
 
 ### `vite.config.ts`
 
