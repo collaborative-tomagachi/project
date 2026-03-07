@@ -11,7 +11,6 @@ project/
 │   │   ├── icon48x48.png
 │   │   ├── icon96x96.png
 │   │   └── icon32x32.png
-│   └── background.js      # Background script
 ├── src/
 │   ├── pages/
 │   │   ├── popup/             # Popup UI (React app)
@@ -25,15 +24,18 @@ project/
 │   │   ├── options/           # Options page (React app)
 │   │   │   ├── index.html
 │   │   │   └── ...
+│   ├── scripts/
 │   │   ├── content/           # Content scripts
-│   │   └── └── main.tsx
+│   │   │   └── main.ts
+│   │   ├── background/       # Background scripts
+│   │   │   └── main.ts
 │   ├── components/
-│   │   └── └── ...
-│   └── assets/
-│   │   └── └── ...
+│   │    └──  ...
+│   ├── assets/
+│   │    └──  ...
 ├── .github/
 │   └── workflows/
-│   │   └── └── ci.yml
+│        └── ci.yml
 ├── vite.config.ts         # Config for multi-page build
 ├── manifest.config.ts
 ├── package.json
@@ -60,64 +62,35 @@ export default defineManifest({
   name: pkg.name,
   version: pkg.version,
   icons: {
-    48: "public/logo.png",
+    48: "icons/icon48x48.png",
+    96: "icons/icon96x96.png",
   },
   action: {
     default_icon: {
-      48: "public/logo.png",
+      48: "icons/icon48x48.png",
     },
     default_popup: "src/pages/popup/index.html",
   },
+  options_ui: {
+    page: "src/pages/options/index.html",
+  },
   content_scripts: [
     {
-      js: ["src/pages/content/main.ts"],
+      js: ["src/scripts/content/main.ts"],
       matches: ["https://*/*"],
     },
   ],
-  permissions: ["sidePanel", "contentSettings"],
+  background: {
+    service_worker: "src/scripts/background/main.ts",
+  },
+  permissions: ["sidePanel", "contentSettings", "notifications", "storage"], // Any Browser APIs we might want to use
   side_panel: {
     default_path: "src/pages/panel/index.html",
   },
 });
 ```
 
-```json
-{
-  "manifest_version": 3,
-  "name": "TBD Project Name",
-  "version": "1.0",
-
-  "description": "A pet to keep you and your friends company in the browser.",
-  "permissions": ["notifications", "storage", "alarms"],   # Browser APIs we want to use
-  "homepage_url": "https://github.com/collaborative-tomagachi/project#",
-  "icons": {
-    "48": "icons/icon48x48.png",
-    "96": "icons/icon96x96.png",
-  },
-  "options_ui": {
-    "page": "src/pages/options/index.html"
-  },
-  "action": {
-    "default_popup": "src/pages/popup/index.html",
-    "default_icon": {
-      "32": "icons/icon32x32.png"
-    }
-  },
-  "chrome_url_overrides": {
-    "newtab": "src/pages/newtab/index.html"
-  },
-  "content_scripts": [
-    {
-      "matches": ["*://*.mozilla.org/*"],
-      "js": [
-        "src/pages/content/index.tsx"
-      ],
-    }
-  ]
-}
-```
-
-### `/src/pages/popup`
+### `/src/pages/popup/`
 
 > [Popup Documentation](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/user_interface/Popups)
 
@@ -125,17 +98,35 @@ The directory where we can defined the page to display when the user clicks on t
 
 Popups close when a user clicks outside of it, where user actions can live. I.e. open the room/settings, invite user, etc.
 
-### `/src/pages/options`
+### `/src/pages/options/`
 
 > [Options Documentation](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/user_interface/Options_pages)
 
 Where the extension settings live.
 
-### `/src/pages/panel`
+### `/src/pages/panel/`
 
 > [Sidebar Documentation](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/user_interface/Sidebars)
 
 I think this is where we should have the room for where the pet should actually live.
+
+## `/src/scripts/content/`
+
+> [Content Scripts Documentation](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Content_scripts)
+
+Content scripts can access and manipulate web pages. Content scripts are loaded into web pages and run in the context of that particular page.
+
+I don't think we'll need this for MVP, but could be used if we want pets to interact with webpages.
+
+## `/src/scripts/background/`
+
+> [Background Scripts Documentation](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Background_scripts)
+
+Background scripts or a background page enable you to monitor and react to events in the browser, such as navigating to a new page, removing a bookmark, or closing a tab.
+
+Not necessary for MVP.
+
+> Note: Firefox's MV3 support for background service workers has historically been inconsistent, so worth double-checking current Firefox MV3 compatibility if we end up wanting to use this.
 
 ### `vite.config.ts`
 
@@ -146,14 +137,14 @@ import { resolve } from "node:path";
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { crx, ManifestV3Export } from '@crxjs/vite-plugin';
-import manifest from './manifest.json';
+import manifest from './manifest.config.ts';
 import zip from 'vite-plugin-zip-pack'
 import { name, version } from './package.json'
 
 export default defineConfig({
   resolve: {
     alias: {
-      '@': `${path.resolve(__dirname, 'src')}`,
+      '@': `${resolve(__dirname, 'src')}`,
     },
   },
   plugins: [
@@ -167,20 +158,7 @@ export default defineConfig({
       }),
     zip({ outDir: 'release', outFileName: `crx-${name}-${version}.zip` }),
   ],
-  publicDir: resolve(__dirname, 'public'),
-  build: {
-    rollupOptions: {
-      input: {
-        main: resolve(__dirname, "index.html"),
-        popup: resolve(__dirname, "src/pages/popup/index.html"),
-        options: resolve(__dirname, "src/pages/options/index.html"),
-        panel: resolve(__dirname, "src/pages/panel/index.html"),
-      },
-      output: {
-        entryFileNames: (chunk) => `src/pages/${chunk.name}/index.js`,
-      },
-    },
-  },
+  publicDir: resolve(__dirname, 'public')
 });
 ```
 
@@ -222,10 +200,10 @@ jobs:
         run: npm i
 
       - name: Build
-        run: npm build
+        run: npm run build
 
       - name: Upload extension artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: vite-web-extension-firefox
           path: release
