@@ -1,5 +1,7 @@
 # React + TypeScript + Vite Firefox Extension
 
+[Style Guide](./docs/STYLE_GUIDE.md)
+
 ## Running Locally
 
 To run locally run
