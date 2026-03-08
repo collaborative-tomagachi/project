@@ -10,7 +10,7 @@ export default defineManifest({
   //     96: "icons/icon96x96.png",
   //   },
   action: {
-    default_icon: "vite.svg",
+    default_icon: "temp-icon.svg",
     default_title: pkg.name,
     default_popup: "src/pages/popup/index.html",
   },
