@@ -1,4 +1,4 @@
-name: CI
+name: Check Formatting
 
 on:
   pull_request:
