@@ -25,7 +25,6 @@ export default defineManifest({
   ],
   background: {
     scripts: ["src/scripts/background/main.ts"],
-    type: "module",
   },
   permissions: ["sidePanel", "contentSettings", "notifications", "storage"], // Any Browser APIs we might want to use
   // Sidebar property for firefox isn't supported by @crxjs/vite-plugin
