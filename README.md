@@ -59,7 +59,7 @@ project/
 │   └── workflows/
 │        └── ...
 ├── vite.config.ts         # Config for multi-page build
-├── manifest.config.ts.    # Config for the extension manifest
+├── manifest.config.ts     # Config for the extension manifest
 ├── package.json
 └── README.md
 
