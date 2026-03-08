@@ -28,4 +28,12 @@ export default defineConfig({
     zip({ outDir: "release", outFileName: `crx-${name}-${version}.zip` }),
   ],
   publicDir: resolve(__dirname, "public"),
+  // Only have to specify the panel page because sidebar_action isn't recognized by @crxjs/vite-plugin
+  build: {
+    rollupOptions: {
+      input: {
+        panel: resolve(__dirname, "src/pages/panel/index.html"),
+      },
+    },
+  },
 });

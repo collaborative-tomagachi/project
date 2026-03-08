@@ -28,7 +28,13 @@ export default defineManifest({
     type: "module",
   },
   permissions: ["sidePanel", "contentSettings", "notifications", "storage"], // Any Browser APIs we might want to use
-  side_panel: {
-    default_path: "src/pages/panel/index.html",
+  // Sidebar property for firefox isn't supported by @crxjs/vite-plugin
+  // But will work, so just ignoring type errors
+  // @ts-ignore
+  sidebar_action: {
+    default_icon: "temp-icon.svg",
+    default_title: pkg.name,
+    default_panel: "src/pages/panel/index.html",
+    open_at_install: true,
   },
 });
