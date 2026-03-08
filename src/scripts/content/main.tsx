@@ -1,10 +1,10 @@
 import { createRoot } from "react-dom/client";
 
 const div = document.createElement("div");
-div.id = "__root";
+div.id = "collaborative-tomagachi-root";
 document.body.appendChild(div);
 
-const rootContainer = document.querySelector("#__root");
+const rootContainer = document.querySelector("#collaborative-tomagachi-root");
 if (!rootContainer) throw new Error("Can't find Content root element");
 const root = createRoot(rootContainer);
 root.render(<div>content script loaded</div>);
