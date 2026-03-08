@@ -26,9 +26,12 @@ project/
 │   │   │   └── ...
 │   ├── scripts/
 │   │   ├── content/           # Content scripts
-│   │   │   └── main.ts
+│   │   │   └── main.tsx
 │   │   ├── background/       # Background scripts
 │   │   │   └── main.ts
+│   ├── shared/
+│   │   ├── App.css
+│   │   └── index.css
 │   ├── components/
 │   │    └──  ...
 │   ├── assets/
