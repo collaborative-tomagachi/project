@@ -84,7 +84,7 @@ export default defineManifest({
     },
   ],
   background: {
-    service_worker: "src/scripts/background/main.ts",
+    scripts: ["src/scripts/background/main.ts"],
   },
   permissions: ["sidePanel", "contentSettings", "notifications", "storage"], // Any Browser APIs we might want to use
   side_panel: {
