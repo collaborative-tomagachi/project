@@ -165,7 +165,7 @@ export default defineConfig({
 });
 ```
 
-### `/.github/workflows/ci.yml`
+### `/.github/workflows/release.yml`
 
 To run the workflow do the following:
 
@@ -173,8 +173,7 @@ To run the workflow do the following:
 - In the left sidebar click on "Build and Zip Extension"
 - Click on "Run Workflow" and select the main branch, then "Run Workflow"
 - Refresh the page and click the most recent run
-- In the summary page "Artifacts" section click on the generated "vite-web-extension-firefox"
-- Upload this file to the
+- In the summary page "Artifacts" section click on the generated "firefox-web-extension"
 
 ```yml
 name: Build and Zip Extension
