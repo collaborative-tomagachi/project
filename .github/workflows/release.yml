@@ -1,4 +1,4 @@
-name: Build and Zip Extension
+name: Build Extension
 
 on:
   workflow_dispatch:
@@ -6,41 +6,25 @@ on:
     branches: [main]
 
 jobs:
-  build-backend:
-    name: Build Backend
-    timeout-minutes: 15
+  build:
+    name: Build Firefox Extension
     runs-on: ubuntu-latest
-    container: node:22
     steps:
       - name: Check out code
         uses: actions/checkout@v6
 
-      - name: Install backend dependencies
-        run: |
-          cd backend
-          npm ci
-
-      - name: Build backend
-        run: cd backend && npm run build
-
-  build-frontend:
-    name: Build Extension
-    timeout-minutes: 15
-    runs-on: ubuntu-latest
-    container: node:22
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v6
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
         with:
-          fetch-depth: 2
+          node-version: '20'
 
-      - name: Install frontend dependencies
-        run: |
-          cd frontend
-          npm ci
+      - name: Install dependencies
+        working-directory: ./frontend
+        run: npm ci
 
       - name: Build extension
-        run: cd frontend && npm run build
+        working-directory: ./frontend
+        run: npm run build
 
       - name: Upload extension artifacts
         uses: actions/upload-artifact@v6
