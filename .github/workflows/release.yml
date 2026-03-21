@@ -10,18 +10,15 @@ jobs:
     name: Build Backend
     timeout-minutes: 15
     runs-on: ubuntu-latest
+    container: node:22
     steps:
       - name: Check out code
         uses: actions/checkout@v6
 
-      - name: Setup Node.js environment
-        uses: actions/setup-node@v6
-        with:
-          node-version: 22
-          package-manager-cache: false
-
       - name: Install backend dependencies
-        run: cd backend && npm i
+        run: |
+          cd backend
+          npm ci
 
       - name: Build backend
         run: cd backend && npm run build
@@ -30,20 +27,17 @@ jobs:
     name: Build Extension
     timeout-minutes: 15
     runs-on: ubuntu-latest
+    container: node:22
     steps:
       - name: Check out code
         uses: actions/checkout@v6
         with:
           fetch-depth: 2
 
-      - name: Setup Node.js environment
-        uses: actions/setup-node@v6
-        with:
-          node-version: 22
-          package-manager-cache: false
-
       - name: Install frontend dependencies
-        run: cd frontend && npm i
+        run: |
+          cd frontend
+          npm ci
 
       - name: Build extension
         run: cd frontend && npm run build
