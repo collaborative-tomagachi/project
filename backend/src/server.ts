@@ -1,14 +1,14 @@
-import express, { NextFunction, Request, Response } from 'express';
-import helmet from 'helmet';
-import morgan from 'morgan';
-import path from 'path';
-import cors from 'cors';
+import express, { NextFunction, Request, Response } from "express";
+import helmet from "helmet";
+import morgan from "morgan";
+import path from "path";
+import cors from "cors";
 
-import HttpStatusCodes from '@src/common/constants/HttpStatusCodes';
-import { RouteError } from '@src/common/utils/route-errors';
-import BaseRouter from '@src/routes/apiRouter';
+import HttpStatusCodes from "@src/common/constants/HttpStatusCodes";
+import { RouteError } from "@src/common/utils/route-errors";
+import BaseRouter from "@src/routes/apiRouter";
 
-import EnvVars, { NodeEnvs } from './common/constants/env';
+import EnvVars, { NodeEnvs } from "./common/constants/env";
 
 const app = express();
 
@@ -18,7 +18,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 if (EnvVars.NodeEnv === NodeEnvs.DEV) {
-  app.use(morgan('dev'));
+  app.use(morgan("dev"));
 }
 
 // Security
@@ -29,7 +29,7 @@ if (EnvVars.NodeEnv === NodeEnvs.PRODUCTION) {
   }
 }
 
-app.use('/api', BaseRouter);
+app.use("/api", BaseRouter);
 
 // **** Error Handler **** //
 app.use((err: Error, _: Request, res: Response, next: NextFunction) => {
@@ -45,22 +45,22 @@ app.use((err: Error, _: Request, res: Response, next: NextFunction) => {
 });
 
 // **** FrontEnd Content **** //
-const viewsDir = path.join(__dirname, 'views');
-app.set('views', viewsDir);
+const viewsDir = path.join(__dirname, "views");
+app.set("views", viewsDir);
 
 // Set static directory (js and css).
-const staticDir = path.join(__dirname, 'public');
+const staticDir = path.join(__dirname, "public");
 app.use(express.static(staticDir));
 
 // Nav to API root by default
-app.get('/', (_: Request, res: Response) => {
+app.get("/", (_: Request, res: Response) => {
   return res.json({
-    message: 'Collaborative Tamagachi API',
-    version: '1.0.0',
+    message: "Collaborative Tamagachi API",
+    version: "1.0.0",
     endpoints: {
-      hello: '/api/hello',
-      helloWithName: '/api/hello/:name'
-    }
+      hello: "/api/hello",
+      helloWithName: "/api/hello/:name",
+    },
   });
 });
 

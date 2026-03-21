@@ -1,4 +1,4 @@
-import HttpStatusCodes from '@src/common/constants/HttpStatusCodes';
+import HttpStatusCodes from "@src/common/constants/HttpStatusCodes";
 
 /******************************************************************************
                                  Classes
@@ -20,8 +20,7 @@ export class RouteError extends Error {
  * Handle validation errors.
  */
 export class ValidationError extends RouteError {
-  public static MESSAGE =
-    'The validation function discovered one or more errors.';
+  public static MESSAGE = "The validation function discovered one or more errors.";
   public errors: string[];
 
   public constructor(errors: string[]) {
