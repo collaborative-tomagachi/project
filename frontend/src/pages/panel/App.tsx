@@ -14,7 +14,7 @@ function App() {
       const data = await response.json();
       setApiMessage(data.message);
     } catch (error) {
-      console.log(error)
+      console.error(error)
       setApiMessage('Error connecting to backend');
     } finally {
       setLoading(false);

@@ -5,8 +5,7 @@ const apiRouter = Router();
 // ----------------------- Hello Route -------------------------------- //
 
 apiRouter.get('/hello', (req: Request, res: Response) => {
-  const name = req.query.name as string || 'World';
-  return res.json({ 
+  const name = (typeof req.query.name === 'string' && req.query.name) || 'World';  return res.json({ 
     message: `Hello, ${name}!`,
     timestamp: new Date().toISOString()
   });

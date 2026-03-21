@@ -21,13 +21,11 @@ export class RouteError extends Error {
  */
 export class ValidationError extends RouteError {
   public static MESSAGE =
-    'The validation function discovered one or ' + 'more errors.';
+    'The validation function discovered one or more errors.';
+  public errors: string[];
 
   public constructor(errors: string[]) {
-    const msg = JSON.stringify({
-      message: ValidationError.MESSAGE,
-      errors,
-    });
-    super(HttpStatusCodes.BAD_REQUEST, msg);
+    super(HttpStatusCodes.BAD_REQUEST, ValidationError.MESSAGE);
+    this.errors = errors;
   }
 }
