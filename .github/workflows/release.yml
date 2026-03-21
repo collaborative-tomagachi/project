@@ -1,4 +1,4 @@
-name: Build Extension
+name: Build and Zip Extension
 
 on:
   workflow_dispatch:
@@ -6,23 +6,25 @@ on:
     branches: [main]
 
 jobs:
-  build:
-    name: Build Firefox Extension
+  build-frontend:
+    name: Build Frontend Extension
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
         uses: actions/checkout@v6
+        with:
+          fetch-depth: 2
 
-      - name: Setup Node.js
+      - name: Setup Node.js environment
         uses: actions/setup-node@v6
         with:
-          node-version: '20'
+          node-version: 22
+          cache: "npm"
 
       - name: Install dependencies
-        working-directory: ./frontend
-        run: npm ci
+        run: npm install
 
-      - name: Build extension
+      - name: Build frontend
         working-directory: ./frontend
         run: npm run build
 
@@ -31,3 +33,31 @@ jobs:
         with:
           name: firefox-web-extension
           path: frontend/release
+
+  build-backend:
+    name: Build Backend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 2
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build backend
+        working-directory: ./backend
+        run: npm run build
+
+      - name: Upload backend artifacts
+        uses: actions/upload-artifact@v6
+        with:
+          name: backend-dist
+          path: backend/dist
