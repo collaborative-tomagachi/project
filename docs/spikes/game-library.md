@@ -14,7 +14,7 @@ An open source specialized 2D JavaScript game framework that uses WebGL (and HTM
 
 ## Getting Started with Phaser
 
-Phaser has an [official template project using react and Phaser](https://github.com/phaserjs/template-react).
+Phaser has an [official template project using React and Phaser](https://github.com/phaserjs/template-react-ts) which much of this information is based on.
 
 ### 1. Install via npm
 
@@ -39,7 +39,7 @@ import { Boot, Room, MainMenu, Preloader } from '@src/game/scenes';
 import { GAME_PARENT_ID } from '@src/game/lib/constants';
 
 
-const config = {
+const config: Phaser.Types.Core.GameConfig = {
     type: Phaser.AUTO,      // Which renderer to use. AUTO picks WEBGL if available, otherwise CANVAS.
     width: 1024,            // width of game in game pixels
     height: 768,            // height of game in game pixels
@@ -75,7 +75,7 @@ export enum GameScenes {
 ```Typescript
 // usePhaser.ts
 const usePhaser = (ref) => {
-    const game = useRef();
+    const game = useRef<Phaser.Game | null>();
 
     // Create the game inside a useLayoutEffect hook to avoid the game being created outside the DOM
     useLayoutEffect(() => {
@@ -110,9 +110,9 @@ export const EventBus = new Phaser.Events.EventEmitter();
 import { GAME_EVENTS } from '@src/game/lib/constants'
 import { EventBus } from '@src/game/lib/phaser';
 
-export useEventListener = (gameRef: React.Ref) => {
+export useEventListener = (gameRef: React.Ref<Phaser.Game | null>) => {
 
-    const onSceneReady = (currentScene) => {
+    const onSceneReady = (currentScene: Phaser.Scene) => {
         ref.current.scene = currentScene;
     };
 
@@ -128,6 +128,8 @@ export useEventListener = (gameRef: React.Ref) => {
 ```
 
 ### 5. Add Scenes
+
+[Scene Documentation](https://docs.phaser.io/phaser/concepts/scenes)
 
 Scenes are where we handle logic to load assets and where sprites, game logic and all of the Phaser systems live. Multiple scenes can be running at the same time.
 
@@ -247,7 +249,56 @@ class RoomScene extends Scene {
 
 ### 6. Add Pet Sprites
 
+The base sprite class that all our sprites (pets etc) should extend.
+
 ```Typescript
+// Sprite.ts
+export interface Coordinates {
+    x: number;
+    y: number;
+}
+interface SpriteInitParams {
+    spriteSheet: Img;
+    initialPosition: Coordiates;
+    phaserRef: React.Ref;
+}
+export class Sprite {
+    spriteSheet: Img;
+    position: Coordinates;
+    game: React.Ref;
+
+    constructor(params: SpriteInitParams) {
+        this.spriteSheet = params.spriteSheet;
+        this.position = params.initialPosition;
+        this.game = params.phaserRef;
+
+    }
+
+    getCurrentScene() {
+        return this.game.current.scene;
+    }
+
+    add() {
+        // Add sprite to current scene
+        const { x, y } = this.position;
+        const scene = getCurrentScene()
+        if (!scene) return;
+        // Sprite Game Object instance
+        return scene.add.sprite(x, y, this.image);
+    }
+
+    move(coords: Coordinates) {
+        this.position = coords;
+        const scene = getCurrentScene()
+        if (!scene) return
+
+        scene.moveLogo(({ x, y }) => {
+            setSpritePosition({ x, y });
+
+        });
+    }
+
+}
 
 ```
 
@@ -333,6 +384,7 @@ frontend/
 │   │   │   ├── Scene.ts
 │   │   │   └── ...
 │   │   ├── sprites/
+│   │   │   ├── Sprite.ts
 │   │   │   └── ...     # Pets
 │   │   └── lib/
 │   │       ├── constants.ts
