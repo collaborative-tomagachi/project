@@ -16,6 +16,8 @@ An open source specialized 2D JavaScript game framework that uses WebGL (and HTM
 
 Phaser has an [official template project using React and Phaser](https://github.com/phaserjs/template-react-ts) which much of this information is based on.
 
+There is also a [directory of examples](https://phaser.io/examples/v3.85.0/games) that can be helpful to reference.
+
 ### 1. Install via npm
 
 `npm install phaser`
