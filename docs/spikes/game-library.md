@@ -46,6 +46,9 @@ const config: Phaser.Types.Core.GameConfig = {
     parent: GAME_PARENT_ID,  // HTMLElement or string (id of element that will contain the game screen)
     backgroundColor: '#fff',
     pixelArt: true,         // Sets antialias to false and roundPixels to true.
+    physics: {
+        default: 'arcade'
+    },
     scene: [                  // A scene or scenes to add to the game.
         Boot,
         Preloader,
@@ -135,7 +138,7 @@ Scenes are where we handle logic to load assets and where sprites, game logic an
 
 The general order of scenes is:
 
-`Boot → Preloader → [Main Game Scenes] → EndScene`
+`Boot → Preloader → [Main Game Scenes]`
 
 The base scene class that all our scenes should extend. Any logic that all scenes should have access to should be implemented here.
 
@@ -247,56 +250,70 @@ class RoomScene extends Scene {
 }
 ```
 
-### 6. Add Pet Sprites
+### 6. Add Sprites
 
-The base sprite class that all our sprites (pets etc) should extend.
+[Sprite Documentation](https://docs.phaser.io/phaser/concepts/gameobjects/sprite)
+
+`Phaser.GameObjects.Sprite` is a basic, animated, visual object used for rendering, while `Phaser.Physics.Arcade.Sprite` is a specialized Sprite that automatically includes an Arcade Physics body for collision, velocity, and gravity. Use `GameObjects.Sprite` for static images or UI, and Physics.Arcade.Sprite for moving game characters or projectiles
+
+The base `Pet` class that all our sprites (pets etc) should extend.
 
 ```Typescript
-// Sprite.ts
+// Pet.ts
 export interface Coordinates {
     x: number;
     y: number;
 }
-interface SpriteInitParams {
+
+interface PetInitParams {
     spriteSheet: Img;
-    initialPosition: Coordiates;
+    initialPosition: Coordinates;
     phaserRef: React.Ref;
+    name: string;
 }
-export class Sprite {
+
+export class Pet extends extends Phaser.Physics.Arcade.Sprite {
+
+    constructor(config: PetInitParams) {
+        super(config.scene, config.initialPosition.x, config.initialPosition.y, config.name);
+
+        this.scene = config.phaserRef.current.scene;
+        this.scene.add.existing(this);
+        this.scene.physics.add.existing(this);
+        this.speed = 50;
+        //...
+    }
+
+    move() {
+        // petWalking is the name of an animation we would have loaded in our Preloading scene
+        this.play('petWalking');
+
+        this.setVelocityX(this.speed);
+    }
+
+}
+
+```
+
+Items that the pets or player can interact with should also be sprites.
+
+```Typescript
+interface ItemInitParams {
     spriteSheet: Img;
-    position: Coordinates;
-    game: React.Ref;
+    initialPosition: Coordinates;
+    phaserRef: React.Ref;
+    name: string;
+}
+export class Item extends extends Phaser.GameObjects.Sprite {
 
-    constructor(params: SpriteInitParams) {
-        this.spriteSheet = params.spriteSheet;
-        this.position = params.initialPosition;
-        this.game = params.phaserRef;
+    constructor(config: ItemInitParams) {
+        super(config.scene, config.x, config.y,config.name);
 
+        this.scene = config.phaserRef.current.scene;
+        this.scene.add.existing(this);
+        //...
     }
 
-    getCurrentScene() {
-        return this.game.current.scene;
-    }
-
-    add() {
-        // Add sprite to current scene
-        const { x, y } = this.position;
-        const scene = getCurrentScene()
-        if (!scene) return;
-        // Sprite Game Object instance
-        return scene.add.sprite(x, y, this.image);
-    }
-
-    move(coords: Coordinates) {
-        this.position = coords;
-        const scene = getCurrentScene()
-        if (!scene) return
-
-        scene.moveLogo(({ x, y }) => {
-            setSpritePosition({ x, y });
-
-        });
-    }
 
 }
 
@@ -327,7 +344,7 @@ export const GameContainer = () => {
 };
 ```
 
-### 6. Create context to save game state
+### 8. Create context to save game state
 
 ```Typescript
 // gameContext.ts
@@ -345,7 +362,7 @@ export const GameContext = createContext(initialGameState);
 
 ```
 
-### 7. Connect it all together in `App.tsx`
+### 9. Connect it all together in `App.tsx`
 
 ```Typescript
 import { useRef, useState } from 'react';
@@ -384,8 +401,9 @@ frontend/
 │   │   │   ├── Scene.ts
 │   │   │   └── ...
 │   │   ├── sprites/
-│   │   │   ├── Sprite.ts
-│   │   │   └── ...     # Pets
+│   │   │   ├── Pet.ts
+│   │   │   ├── Item.ts
+│   │   │   └── ...     # Pets and Items
 │   │   └── lib/
 │   │       ├── constants.ts
 │   │       ├── movementUtils.ts
