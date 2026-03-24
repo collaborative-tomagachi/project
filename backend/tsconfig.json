@@ -16,14 +16,8 @@
   },
   "ts-node": {
     "swc": true,
-    "require": ["tsconfig-paths/register", "dotenv/config"],
+    "require": ["tsconfig-paths/register", "dotenv/config"]
   },
-  "include": [
-    "src/**/*.ts",
-    "tests/**/*.ts",
-    "scripts",
-    "eslint.config.ts",
-    "vitest.config.mts"
-  ],
+  "include": ["src/**/*.ts", "tests/**/*.ts", "scripts", "eslint.config.ts", "vitest.config.mts"],
   "exclude": ["src/public/*"]
 }

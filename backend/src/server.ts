@@ -23,6 +23,7 @@ if (EnvVars.NodeEnv === NodeEnvs.DEV) {
 
 // Security
 if (EnvVars.NodeEnv === NodeEnvs.PRODUCTION) {
+  app.use(morgan("production"));
   // eslint-disable-next-line no-process-env
   if (!process.env.DISABLE_HELMET) {
     app.use(helmet());
@@ -33,7 +34,7 @@ app.use("/api", BaseRouter);
 
 // **** Error Handler **** //
 app.use((err: Error, _: Request, res: Response, next: NextFunction) => {
-  if (EnvVars.NodeEnv !== NodeEnvs.TEST.valueOf()) {
+  if (EnvVars.NodeEnv !== NodeEnvs.TEST) {
     console.error(err);
   }
   let status: number = HttpStatusCodes.BAD_REQUEST;
@@ -42,26 +43,6 @@ app.use((err: Error, _: Request, res: Response, next: NextFunction) => {
     return res.status(status).json({ error: err.message });
   }
   return next(err);
-});
-
-// **** FrontEnd Content **** //
-const viewsDir = path.join(__dirname, "views");
-app.set("views", viewsDir);
-
-// Set static directory (js and css).
-const staticDir = path.join(__dirname, "public");
-app.use(express.static(staticDir));
-
-// Nav to API root by default
-app.get("/", (_: Request, res: Response) => {
-  return res.json({
-    message: "Collaborative Tamagachi API",
-    version: "1.0.0",
-    endpoints: {
-      hello: "/api/hello",
-      helloWithName: "/api/hello/:name",
-    },
-  });
 });
 
 export default app;

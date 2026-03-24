@@ -17,11 +17,5 @@
     "removeComments": true
   },
   "include": ["src/**/*.ts"],
-  "exclude": [
-    "tests",
-    "src/public/",
-    "scripts",
-    "eslint.config.ts",
-    "vitest.config.js"
-  ]
+  "exclude": ["tests", "src/public/", "scripts", "eslint.config.ts", "vitest.config.js"]
 }
