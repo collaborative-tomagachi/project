@@ -10,7 +10,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "fmt": "oxfmt",
-    "fmt:check": "oxfmt --check"
+    "fmt:check": "oxfmt --check . --ignore-path=node_modules"
   },
   "dependencies": {
     "@crxjs/vite-plugin": "^2.3.0",
