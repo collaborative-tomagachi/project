@@ -8,7 +8,7 @@ on:
 permissions: {}
 
 jobs:
-  format:
+  format-frontend:
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
@@ -20,8 +20,32 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: 22
-          cache: "npm"
 
-      # Or yarn, npm, etc.
-      - run: npm install --frozen-lockfile
-      - run: npm run fmt:check
+      - name: Install dependencies
+        working-directory: ./frontend
+        run: npm ci
+
+      - name: Check frontend formatting
+        working-directory: ./frontend
+        run: npm run fmt:check
+
+  format-backend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 2
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        working-directory: ./backend
+        run: npm ci
+
+      - name: Check backend formatting
+        working-directory: ./backend
+        run: npm run fmt:check

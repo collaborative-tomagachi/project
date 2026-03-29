@@ -6,9 +6,8 @@ on:
     branches: [main]
 
 jobs:
-  build:
-    name: Build
-    timeout-minutes: 15
+  build-frontend:
+    name: Build Frontend Extension
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
@@ -20,16 +19,45 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: 22
-          cache: "npm"
 
       - name: Install dependencies
-        run: npm i
+        working-directory: ./frontend
+        run: npm ci
 
-      - name: Build
+      - name: Build frontend
+        working-directory: ./frontend
         run: npm run build
 
       - name: Upload extension artifacts
         uses: actions/upload-artifact@v6
         with:
           name: firefox-web-extension
-          path: release
+          path: frontend/release
+
+  build-backend:
+    name: Build Backend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 2
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        working-directory: ./backend
+        run: npm ci
+
+      - name: Build backend
+        working-directory: ./backend
+        run: npm run build
+
+      - name: Upload backend artifacts
+        uses: actions/upload-artifact@v6
+        with:
+          name: backend-dist
+          path: backend/dist
